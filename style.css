@@ -44,18 +44,18 @@ body, html {
     border-radius: 5px;
 }
 
+.tree {
+    width: 100px;
+    height: 150px;
+    background: url('arbre.png') no-repeat center center;
+    background-size: contain;
+    position: absolute;
+}
+
 #score {
     position: fixed;
     top: 10px;
     left: 10px;
     font-size: 24px;
     color: #000;
-}
-
-.tree {
-    width: 100px; /* Taille de l'arbre */
-    height: 150px;
-    background: url('arbre.png') no-repeat center center;
-    background-size: contain;
-    position: absolute;
 }
