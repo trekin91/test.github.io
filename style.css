@@ -35,11 +35,14 @@ body, html {
 }
 
 #dinosaur {
-    width: 100px; /* Taille du dinosaure */
-    height: 100px;
+    width: 50px; /* Taille du dinosaure */
+    height: 50px;
     background: url('dino.png') no-repeat center center;
     background-size: contain; /* Assurez-vous que l'image s'adapte au div */
     position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .collectible {
