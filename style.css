@@ -1,3 +1,10 @@
+:root {
+    --dinosaur-size: 100px;
+    --collectible-size: 50px;
+    --tree-width: 100px;
+    --tree-height: 150px;
+}
+
 body, html {
     height: 100%;
     margin: 0;
@@ -24,32 +31,31 @@ body, html {
 }
 
 #dinosaur {
-    width: 100px;
-    height: 100px;
+    width: var(--dinosaur-size);
+    height: var(--dinosaur-size);
     background: url('dino.png') no-repeat center center;
     background-size: contain;
     position: absolute;
     border-radius: 10px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+}
+
+.collectible, .tree {
+    position: absolute;
 }
 
 .collectible {
-    width: 50px;
-    height: 50px;
+    width: var(--collectible-size);
+    height: var(--collectible-size);
     background: url('viande.png') no-repeat center center;
     background-size: contain;
-    position: absolute;
     border-radius: 5px;
 }
 
 .tree {
-    width: 100px;
-    height: 150px;
+    width: var(--tree-width);
+    height: var(--tree-height);
     background: url('arbre.png') no-repeat center center;
     background-size: contain;
-    position: absolute;
 }
 
 #score {
