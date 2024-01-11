@@ -63,6 +63,16 @@ function checkCollision(collectible) {
     }
 }
 
+function canMove(newX, newY) {
+    let testDinosaur = dinosaur.cloneNode();
+    testDinosaur.style.left = newX + 'px';
+    testDinosaur.style.top = newY + 'px';
+    gameArea.appendChild(testDinosaur);
+    let canMove = !checkElementCollision(testDinosaur);
+    gameArea.removeChild(testDinosaur);
+    return canMove;
+}
+
 function moveDinosaur(event) {
     event.preventDefault();
     let touchLocation = event.targetTouches[0];
@@ -70,13 +80,15 @@ function moveDinosaur(event) {
     let newX = touchLocation.clientX - gameAreaRect.left - dinosaur.offsetWidth / 2;
     let newY = touchLocation.clientY - gameAreaRect.top - dinosaur.offsetHeight / 2;
 
-    if (newX < 0) newX = 0;
-    if (newY < 0) newY = 0;
-    if (newX > gameArea.offsetWidth - dinosaur.offsetWidth) newX = gameArea.offsetWidth - dinosaur.offsetWidth;
-    if (newY > gameArea.offsetHeight - dinosaur.offsetHeight) newY = gameArea.offsetHeight - dinosaur.offsetHeight;
+    // S'assurer que le dinosaure reste dans la zone de jeu
+    newX = Math.max(0, Math.min(newX, gameArea.offsetWidth - dinosaur.offsetWidth));
+    newY = Math.max(0, Math.min(newY, gameArea.offsetHeight - dinosaur.offsetHeight));
 
-    dinosaur.style.left = `${newX}px`;
-    dinosaur.style.top = `${newY}px`;
+    // Vérifiez si le dinosaure peut se déplacer à cette position sans collision
+    if (canMove(newX, newY)) {
+        dinosaur.style.left = `${newX}px`;
+        dinosaur.style.top = `${newY}px`;
+    }
 
     document.querySelectorAll('.collectible').forEach(collectible => checkCollision(collectible));
 }
