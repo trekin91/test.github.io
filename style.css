@@ -51,3 +51,11 @@ body, html {
     font-size: 24px;
     color: #000;
 }
+
+.tree {
+    width: 100px; /* Taille de l'arbre */
+    height: 150px;
+    background: url('arbre.png') no-repeat center center;
+    background-size: contain;
+    position: absolute;
+}
