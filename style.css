@@ -1,6 +1,7 @@
 body, html {
     height: 100%;
     margin: 0;
+    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -8,8 +9,10 @@ body, html {
 }
 
 #gameArea {
-    width: 80%; /* Ajustez selon la taille souhaitée */
-    height: 80%; /* Ajustez selon la taille souhaitée */
+    width: 80vw; /* 80% de la largeur de la fenêtre */
+    height: 80vh; /* 80% de la hauteur de la fenêtre */
+    min-width: 300px; /* Largeur minimale */
+    min-height: 300px; /* Hauteur minimale */
     border: 3px solid #000;
     position: relative;
     touch-action: none; /* Important pour iOS */
