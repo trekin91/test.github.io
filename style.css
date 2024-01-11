@@ -34,12 +34,20 @@ body, html {
     transform: translate(-50%, -50%);
 }
 
-.collectible {
-    width: 20px;
-    height: 20px;
-    background-color: green;
+#dinosaur {
+    width: 100px; /* Taille du dinosaure */
+    height: 100px;
+    background: url('dino.png') no-repeat center center;
+    background-size: contain; /* Assurez-vous que l'image s'adapte au div */
     position: absolute;
-    border-radius: 5px;
+}
+
+.collectible {
+    width: 50px; /* Taille du morceau de viande */
+    height: 50px;
+    background: url('viande.png') no-repeat center center;
+    background-size: contain;
+    position: absolute;
 }
 
 #score {
