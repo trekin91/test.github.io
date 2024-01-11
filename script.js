@@ -45,7 +45,7 @@ function createTree() {
 
 function checkElementCollision(element) {
     let rect1 = element.getBoundingClientRect();
-    let colliders = gameArea.querySelectorAll('.tree, .collectible');
+    let colliders = gameArea.querySelectorAll('.tree');
     for (let collider of colliders) {
         let rect2 = collider.getBoundingClientRect();
         if (!(rect1.right < rect2.left || rect1.left > rect2.right ||
