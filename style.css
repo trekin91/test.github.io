@@ -2,26 +2,30 @@ body, html {
     height: 100%;
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #f0f0f0;
+    overflow: hidden; /* Empêche le défilement inutile */
 }
 
 #gameArea {
-    width: 80vw; /* 80% de la largeur de la fenêtre */
-    height: 80vh; /* 80% de la hauteur de la fenêtre */
-    min-width: 300px; /* Largeur minimale */
-    min-height: 300px; /* Hauteur minimale */
+    width: 90vmin; /* Utilise vmin pour s'assurer que la zone de jeu est toujours visible entièrement */
+    height: 90vmin; /* Utilise vmin pour garder une forme carrée */
+    max-width: 600px; /* Vous pouvez ajuster cela selon la taille maximale souhaitée */
+    max-height: 600px; /* Vous pouvez ajuster cela selon la taille maximale souhaitée */
     border: 3px solid #000;
     position: relative;
+    margin: auto; /* Centrer la gameArea dans la vue */
+    top: 50%;
+    transform: translateY(-50%); /* Centrer verticalement */
     touch-action: none; /* Important pour iOS */
+    background-color: #fff; /* Couleur de fond pour la visibilité */
 }
 
 #cube {
-    width: 50px;
-    height: 50px;
+    width: 50px; /* Taille du cube */
+    height: 50px; /* Taille du cube */
     background-color: red;
     position: absolute;
     border-radius: 10px; /* Pour un meilleur rendu visuel */
+    top: 50%; /* Position de départ en haut */
+    left: 50%; /* Position de départ à gauche */
+    transform: translate(-50%, -50%); /* Centrer le cube dans gameArea */
 }
