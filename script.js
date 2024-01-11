@@ -4,11 +4,39 @@ let scoreDisplay = document.getElementById("score");
 let score = 0;
 
 function getRandomPosition(elementWidth, elementHeight) {
-    let maxX = gameArea.clientWidth - elementWidth;
-    let maxY = gameArea.clientHeight - elementHeight;
-    let randomX = Math.floor(Math.random() * maxX);
-    let randomY = Math.floor(Math.random() * maxY);
-    return { x: randomX, y: randomY };
+    let position;
+    let isValidPosition = false;
+    while (!isValidPosition) {
+        position = {
+            x: Math.floor(Math.random() * (gameArea.clientWidth - elementWidth)),
+            y: Math.floor(Math.random() * (gameArea.clientHeight - elementHeight))
+        };
+        let testElement = document.createElement('div');
+        testElement.style.left = position.x + 'px';
+        testElement.style.top = position.y + 'px';
+        testElement.style.width = elementWidth + 'px';
+        testElement.style.height = elementHeight + 'px';
+        testElement.style.position = 'absolute';
+        
+        gameArea.appendChild(testElement);
+        isValidPosition = !checkElementCollision(testElement);
+        gameArea.removeChild(testElement);
+    }
+    return position;
+}
+
+// Vérifiez si l'élément entre en collision avec un autre élément
+function checkElementCollision(element) {
+    let rect1 = element.getBoundingClientRect();
+    let colliders = gameArea.querySelectorAll('.tree, .collectible');
+    for (let i = 0; i < colliders.length; i++) {
+        let rect2 = colliders[i].getBoundingClientRect();
+        if (!(rect1.right < rect2.left || rect1.left > rect2.right ||
+              rect1.bottom < rect2.top || rect1.top > rect2.bottom)) {
+            return true; // Collision détectée
+        }
+    }
+    return false; // Pas de collision
 }
 
 function createCollectible() {
@@ -57,5 +85,17 @@ function moveDinosaur(event) {
 for (let i = 0; i < 3; i++) {
     createCollectible();
 }
+
+function createTree() {
+    let tree = document.createElement('div');
+    tree.classList.add('tree');
+    let position = getRandomPosition(100, 150); // Taille de l'arbre
+    tree.style.left = position.x + 'px';
+    tree.style.top = position.y + 'px';
+    gameArea.appendChild(tree);
+}
+
+createTree();
+createTree();
 
 gameArea.addEventListener('touchmove', moveDinosaur);
