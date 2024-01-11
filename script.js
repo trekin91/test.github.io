@@ -1,36 +1,49 @@
 let cube = document.getElementById("cube");
 let gameArea = document.getElementById("gameArea");
-let posX = 0, posY = 0;
+let isMoving = false;
 
-// Fonction pour mettre à jour la position du cube
 function updatePosition(newX, newY) {
+    let gameAreaRect = gameArea.getBoundingClientRect();
+
+    // Convertir newX et newY en position relative à gameArea
+    newX -= gameAreaRect.left;
+    newY -= gameAreaRect.top;
+
+    // Limiter la position pour rester dans gameArea
     if (newX < 0) newX = 0;
     if (newY < 0) newY = 0;
     if (newX > gameArea.offsetWidth - cube.offsetWidth) newX = gameArea.offsetWidth - cube.offsetWidth;
     if (newY > gameArea.offsetHeight - cube.offsetHeight) newY = gameArea.offsetHeight - cube.offsetHeight;
 
-    posX = newX;
-    posY = newY;
-
-    cube.style.transform = `translate(${posX}px, ${posY}px)`;
+    // Déplacer le cube
+    cube.style.left = newX + 'px';
+    cube.style.top = newY + 'px';
 }
 
-// Événements tactiles
-cube.addEventListener('touchmove', function(e) {
-    let touchLocation = e.targetTouches[0];
-    let relativeX = touchLocation.pageX - gameArea.offsetLeft - cube.offsetWidth / 2;
-    let relativeY = touchLocation.pageY - gameArea.offsetTop - cube.offsetHeight / 2;
-    updatePosition(relativeX, relativeY);
-    e.preventDefault();
-});
+// Commencer le déplacement
+function startMove(e) {
+    isMoving = true;
+    updatePosition(e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY);
+}
 
-// Événements clavier pour le support sur ordinateur
-document.addEventListener('keydown', function(e) {
-    switch (e.key) {
-        case 'ArrowUp': posY -= 10; break;
-        case 'ArrowDown': posY += 10; break;
-        case 'ArrowLeft': posX -= 10; break;
-        case 'ArrowRight': posX += 10; break;
+// Arrêter le déplacement
+function stopMove() {
+    isMoving = false;
+}
+
+// Mise à jour de la position pendant le mouvement
+function move(e) {
+    if (isMoving) {
+        updatePosition(e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY);
     }
-    updatePosition(posX, posY);
-});
+}
+
+// Écouteurs d'événements pour la souris
+gameArea.addEventListener('mousedown', startMove);
+document.addEventListener('mouseup', stopMove);
+document.addEventListener('mousemove', move);
+
+// Écouteurs d'événements pour le toucher
+gameArea.addEventListener('touchstart', startMove);
+document.addEventListener('touchend', stopMove);
+document.addEventListener('touchmove', move);
