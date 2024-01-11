@@ -2,7 +2,7 @@ body, html {
     height: 100%;
     margin: 0;
     padding: 0;
-    overflow: hidden; /* Empêche le défilement inutile */
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -23,10 +23,11 @@ body, html {
     background-color: #fff;
 }
 
-#cube {
-    width: 50px;
-    height: 50px;
-    background-color: red;
+#dinosaur {
+    width: 100px;
+    height: 100px;
+    background: url('dinosaur.png') no-repeat center center;
+    background-size: contain;
     position: absolute;
     border-radius: 10px;
     top: 50%;
@@ -34,23 +35,13 @@ body, html {
     transform: translate(-50%, -50%);
 }
 
-#dinosaur {
-    width: 50px; /* Taille du dinosaure */
-    height: 50px;
-    background: url('dino.png') no-repeat center center;
-    background-size: contain; /* Assurez-vous que l'image s'adapte au div */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
 .collectible {
-    width: 50px; /* Taille du morceau de viande */
+    width: 50px;
     height: 50px;
-    background: url('viande.png') no-repeat center center;
+    background: url('meat.png') no-repeat center center;
     background-size: contain;
     position: absolute;
+    border-radius: 5px;
 }
 
 #score {
