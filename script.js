@@ -1,4 +1,4 @@
-let cube = document.getElementById("cube");
+let cube = document.getElementById("dinosaur");
 let gameArea = document.getElementById("gameArea");
 let scoreDisplay = document.getElementById("score");
 let score = 0;
@@ -7,8 +7,8 @@ let score = 0;
 function getRandomPosition() {
     let maxX = gameArea.clientWidth - 20; // Width of collectible is 20px
     let maxY = gameArea.clientHeight - 20;
-    let randomX = Math.floor(Math.random() * maxX);
-    let randomY = Math.floor(Math.random() * maxY);
+    let randomX = Math.floor(Math.random() * (maxX - 50));
+    let randomY = Math.floor(Math.random() * (maxY - 50));
     return { x: randomX, y: randomY };
 }
 
