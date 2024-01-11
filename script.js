@@ -1,66 +1,61 @@
-let cube = document.getElementById("dinosaur");
+let dinosaur = document.getElementById("dinosaur");
 let gameArea = document.getElementById("gameArea");
 let scoreDisplay = document.getElementById("score");
 let score = 0;
 
-// Function to generate a random position within the gameArea
-function getRandomPosition() {
-    let maxX = gameArea.clientWidth - 20; // Width of collectible is 20px
-    let maxY = gameArea.clientHeight - 20;
-    let randomX = Math.floor(Math.random() * (maxX - 50));
-    let randomY = Math.floor(Math.random() * (maxY - 50));
+function getRandomPosition(elementWidth, elementHeight) {
+    let maxX = gameArea.clientWidth - elementWidth;
+    let maxY = gameArea.clientHeight - elementHeight;
+    let randomX = Math.floor(Math.random() * maxX);
+    let randomY = Math.floor(Math.random() * maxY);
     return { x: randomX, y: randomY };
 }
 
-// Function to create a new collectible
 function createCollectible() {
     let collectible = document.createElement('div');
     collectible.classList.add('collectible');
-    let position = getRandomPosition();
+    let position = getRandomPosition(50, 50); // Taille du morceau de viande
     collectible.style.left = position.x + 'px';
     collectible.style.top = position.y + 'px';
     gameArea.appendChild(collectible);
-    collectible.addEventListener('touchmove', moveCube);
 }
 
-// Initial creation of three collectibles
+function checkCollision(collectible) {
+    let dinosaurRect = dinosaur.getBoundingClientRect();
+    let collectibleRect = collectible.getBoundingClientRect();
+
+    if (!(dinosaurRect.right < collectibleRect.left ||
+          dinosaurRect.left > collectibleRect.right ||
+          dinosaurRect.bottom < collectibleRect.top ||
+          dinosaurRect.top > collectibleRect.bottom)) {
+        gameArea.removeChild(collectible);
+        score += 10;
+        scoreDisplay.textContent = `Score: ${score}`;
+        createCollectible();
+    }
+}
+
+function moveDinosaur(event) {
+    event.preventDefault();
+    let touchLocation = event.targetTouches[0];
+    let gameAreaRect = gameArea.getBoundingClientRect();
+    let newX = touchLocation.clientX - gameAreaRect.left - dinosaur.offsetWidth / 2;
+    let newY = touchLocation.clientY - gameAreaRect.top - dinosaur.offsetHeight / 2;
+
+    if (newX < 0) newX = 0;
+    if (newY < 0) newY = 0;
+    if (newX > gameArea.offsetWidth - dinosaur.offsetWidth) newX = gameArea.offsetWidth - dinosaur.offsetWidth;
+    if (newY > gameArea.offsetHeight - dinosaur.offsetHeight) newY = gameArea.offsetHeight - dinosaur.offsetHeight;
+
+    dinosaur.style.left = `${newX}px`;
+    dinosaur.style.top = `${newY}px`;
+
+    document.querySelectorAll('.collectible').forEach(collectible => checkCollision(collectible));
+}
+
+// Create initial collectibles
 for (let i = 0; i < 3; i++) {
     createCollectible();
 }
 
-function checkCollision(collectible) {
-    let cubeRect = cube.getBoundingClientRect();
-    let collectibleRect = collectible.getBoundingClientRect();
-
-    if (!(cubeRect.right < collectibleRect.left ||
-          cubeRect.left > collectibleRect.right ||
-          cubeRect.bottom < collectibleRect.top ||
-          cubeRect.top > collectibleRect.bottom)) {
-        // Collision detected
-        gameArea.removeChild(collectible);
-        score += 10; // Increment score
-        scoreDisplay.textContent = `Score: ${score}`;
-        createCollectible(); // Create a new collectible at a random position
-    }
-}
-
-function moveCube(event) {
-    event.preventDefault();
-    let touchLocation = event.targetTouches[0];
-    let gameAreaRect = gameArea.getBoundingClientRect();
-    let newX = touchLocation.clientX - gameAreaRect.left - cube.offsetWidth / 2;
-    let newY = touchLocation.clientY - gameAreaRect.top - cube.offsetHeight / 2;
-
-    if (newX < 0) newX = 0;
-    if (newY < 0) newY = 0;
-    if (newX > gameArea.offsetWidth - cube.offsetWidth) newX = gameArea.offsetWidth - cube.offsetWidth;
-    if (newY > gameArea.offsetHeight - cube.offsetHeight) newY = gameArea.offsetHeight - cube.offsetHeight;
-
-    cube.style.left = `${newX}px`;
-    cube.style.top = `${newY}px`;
-
-    // Check for collision with any collectible
-    document.querySelectorAll('.collectible').forEach(collectible => checkCollision(collectible));
-}
-
-gameArea.addEventListener('touchmove', moveCube);
+gameArea.addEventListener('touchmove', moveDinosaur);
