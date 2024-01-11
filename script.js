@@ -1,100 +1,81 @@
-const gameArea = document.getElementById("gameArea");
-const scoreDisplay = document.getElementById("score");
+let dinosaur = document.getElementById("dinosaur");
+let gameArea = document.getElementById("gameArea");
+let scoreDisplay = document.getElementById("score");
 let score = 0;
 
-const DINO_SIZE = 100, COLLECTIBLE_SIZE = 50, TREE_WIDTH = 100, TREE_HEIGHT = 150;
-const MAX_X = gameArea.clientWidth - DINO_SIZE;
-const MAX_Y = gameArea.clientHeight - DINO_SIZE;
-
-function createGameObject(className, width, height, backgroundUrl) {
-    const element = document.createElement('div');
-    element.classList.add(className);
-    element.style.width = `${width}px`;
-    element.style.height = `${height}px`;
-    element.style.background = `url('${backgroundUrl}') no-repeat center center`;
-    element.style.backgroundSize = 'contain';
-    element.style.position = 'absolute';
-
-    let position = getRandomPosition(width, height);
-    element.style.left = `${position.x}px`;
-    element.style.top = `${position.y}px`;
-
-    gameArea.appendChild(element);
-    return element;
-}
-
 function getRandomPosition(elementWidth, elementHeight) {
-    let position, testElement, isValidPosition = false;
-    while (!isValidPosition) {
+    let position;
+    do {
         position = {
-            x: Math.floor(Math.random() * (MAX_X - elementWidth)),
-            y: Math.floor(Math.random() * (MAX_Y - elementHeight))
+            x: Math.floor(Math.random() * (gameArea.clientWidth - elementWidth)),
+            y: Math.floor(Math.random() * (gameArea.clientHeight - elementHeight))
         };
-        testElement = { ...position, width: elementWidth, height: elementHeight };
-        isValidPosition = !checkElementCollision(testElement);
-    }
+    } while (checkElementCollision(position.x, position.y, elementWidth, elementHeight));
     return position;
 }
 
-function checkElementCollision({ x, y, width, height }) {
-    const testRect = { left: x, top: y, right: x + width, bottom: y + height };
-    const colliders = gameArea.querySelectorAll('.tree');
-    for (let collider of colliders) {
-        const rect = collider.getBoundingClientRect();
-        if (intersect(testRect, rect)) {
+function createCollectible() {
+    let collectible = document.createElement('div');
+    collectible.classList.add('collectible');
+    let position = getRandomPosition(50, 50);
+    collectible.style.left = `${position.x}px`;
+    collectible.style.top = `${position.y}px`;
+    gameArea.appendChild(collectible);
+}
+
+function createTree() {
+    let tree = document.createElement('div');
+    tree.classList.add('tree');
+    let position = getRandomPosition(100, 150);
+    tree.style.left = `${position.x}px`;
+    tree.style.top = `${position.y}px`;
+    gameArea.appendChild(tree);
+}
+
+function checkElementCollision(x, y, width, height) {
+    let testElement = { left: x, top: y, right: x + width, bottom: y + height };
+    let trees = document.querySelectorAll('.tree');
+
+    for (let tree of trees) {
+        let treeRect = tree.getBoundingClientRect();
+        if (!(testElement.right < treeRect.left || testElement.left > treeRect.right || 
+              testElement.bottom < treeRect.top || testElement.top > treeRect.bottom)) {
             return true;
         }
     }
     return false;
 }
 
-function intersect(rect1, rect2) {
-    return !(rect1.right < rect2.left || rect1.left > rect2.right ||
-             rect1.bottom < rect2.top || rect1.top > rect2.bottom);
-}
-
-// Add event listener for dinosaur movement
-gameArea.addEventListener('touchmove', (event) => {
+function moveDinosaur(event) {
     event.preventDefault();
-    const touchLocation = event.targetTouches[0];
-    moveDinosaur(touchLocation.clientX, touchLocation.clientY);
-});
+    let touchLocation = event.targetTouches[0];
+    let gameAreaRect = gameArea.getBoundingClientRect();
+    let newX = touchLocation.clientX - gameAreaRect.left - dinosaur.offsetWidth / 2;
+    let newY = touchLocation.clientY - gameAreaRect.top - dinosaur.offsetHeight / 2;
 
-function moveDinosaur(clientX, clientY) {
-    const newX = Math.min(Math.max(0, clientX - DINO_SIZE / 2), MAX_X);
-    const newY = Math.min(Math.max(0, clientY - DINO_SIZE / 2), MAX_Y);
-
-    if (canMove(newX, newY)) {
+    if (!checkElementCollision(newX, newY, 100, 100)) {
         dinosaur.style.left = `${newX}px`;
         dinosaur.style.top = `${newY}px`;
-        checkForCollectibles();
     }
-}
 
-function canMove(newX, newY) {
-    const testRect = { left: newX, top: newY, right: newX + DINO_SIZE, bottom: newY + DINO_SIZE };
-    return !checkElementCollision(testRect);
-}
+    document.querySelectorAll('.collectible').forEach(collectible => {
+        let collectibleRect = collectible.getBoundingClientRect();
+        let dinosaurRect = dinosaur.getBoundingClientRect();
 
-function checkForCollectibles() {
-    const collectibles = document.querySelectorAll('.collectible');
-    collectibles.forEach(collectible => {
-        if (intersect(dinosaur.getBoundingClientRect(), collectible.getBoundingClientRect())) {
-            collectPoints(collectible);
+        if (!(collectibleRect.right < dinosaurRect.left || collectibleRect.left > dinosaurRect.right || 
+              collectibleRect.bottom < dinosaurRect.top || collectibleRect.top > dinosaurRect.bottom)) {
+            collectible.remove();
+            score += 10;
+            scoreDisplay.textContent = `Score: ${score}`;
+            createCollectible();
         }
     });
 }
 
-function collectPoints(collectible) {
-    score += 10;
-    scoreDisplay.textContent = `Score: ${score}`;
-    collectible.remove();
-    createGameObject('collectible', COLLECTIBLE_SIZE, COLLECTIBLE_SIZE, 'viande.png');
-}
+gameArea.addEventListener('touchmove', moveDinosaur);
 
-// Initial setup
-const dinosaur = createGameObject('dinosaur', DINO_SIZE, DINO_SIZE, 'dino.png');
+// Créez un ou plusieurs arbres au chargement du jeu
+createTree(); // Répétez pour créer plus d'arbres
 for (let i = 0; i < 3; i++) {
-    createGameObject('tree', TREE_WIDTH, TREE_HEIGHT, 'arbre.png');
-    createGameObject('collectible', COLLECTIBLE_SIZE, COLLECTIBLE_SIZE, 'viande.png');
+    createCollectible();
 }
