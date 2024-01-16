@@ -10,6 +10,9 @@
 
     <!-- Ajout de Leaflet JavaScript -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <!-- Ajout de leaflet-polyfill pour les événements tactiles -->
+    <script src="https://unpkg.com/leaflet-polyfill"></script>
     
     <!-- Ajout de jQuery pour faciliter les requêtes AJAX -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -68,42 +71,38 @@
 
 
    $.ajax({
-        url: overpassApiUrl,
-        method: 'GET',
-        data: {data: overpassQuery},
-        dataType: 'json',
-        success: function(data) {
-            debugLog("Données chargées avec succès.");
-            try {
-                var osmData = osmtogeojson(data);
-                L.geoJSON(osmData, {
-                    style: function(feature) {
-                        return {color: "#ff0000", weight: 3};
-                    },
-                    function onEachFeature(feature, layer) {
-    if (feature.properties && feature.properties.tags) {
-        var name = feature.properties.tags.name || "Inconnu";
-        var ref = feature.properties.tags.ref || "Pas de numéro";
-        var popupContent = "Nom: " + name + "<br>Numéro: " + ref;
+    url: overpassApiUrl,
+    method: 'GET',
+    data: {data: overpassQuery},
+    dataType: 'json',
+    success: function(data) {
+        try {
+            var osmData = osmtogeojson(data);
+            L.geoJSON(osmData, {
+                style: function(feature) {
+                    return {color: "#ff0000", weight: 3};
+                },
+                onEachFeature: function(feature, layer) {
+                    if (feature.properties && feature.properties.tags) {
+                        var name = feature.properties.tags.name || "Inconnu";
+                        var ref = feature.properties.tags.ref || "Pas de numéro";
+                        layer.bindPopup("Nom: " + name + "<br>Numéro: " + ref);
 
-        layer.bindPopup(popupContent);
-
-        layer.on('click', function() {
-            layer.openPopup();
-        });
-    }
-}
-
-                }).addTo(map);
-                debugLog("Voies ferrées affichées sur la carte.");
-            } catch (error) {
-                debugLog("Erreur lors de la conversion des données: " + error);
-            }
-        },
-        error: function(xhr, status, error) {
-            debugLog("Erreur lors de la récupération des données: " + status + " - " + error);
+                        // Ajout d'un écouteur d'événements pour gérer les interactions tactiles
+                        layer.on('click', function() {
+                            layer.openPopup();
+                        });
+                    }
+                }
+            }).addTo(map);
+        } catch (error) {
+            console.error("Erreur lors de la conversion des données: " + error);
         }
-    });
+    },
+    error: function(xhr, status, error) {
+        console.error("Erreur lors de la récupération des données: " + status + " - " + error);
+    }
+});
 }
 
 // Appel de la fonction pour charger les voies ferrées dès que la page est chargée
