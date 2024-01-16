@@ -51,6 +51,7 @@
     function waitForOsmToGeojson() {
         if (typeof osmtogeojson === "undefined") {
             setTimeout(waitForOsmToGeojson, 500);
+            debugLog("Chargement osmtogejsô")
         } else {
             loadRailways();
         }
