@@ -77,12 +77,12 @@
         success: function(data) {
             try {
                 var osmData = osmtogeojson(data);
-                debugLog(JSON.stringify(osmData))
                 L.geoJSON(osmData, {
                     style: function(feature) {
                         return {color: "#ff0000", weight: 3};
                     },
                     onEachFeature: function(feature, layer) {
+                        debugLog(JSON.stringify(feature))
                         if (feature.properties && feature.properties.tags) {
                             var name = feature.properties.tags.name || "Inconnu";
                             var ref = feature.properties.tags.ref || "Pas de numéro";
