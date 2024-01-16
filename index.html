@@ -21,13 +21,28 @@
         #map {
             height: 400px;
         }
+        #debug {
+            height: 150px;
+            overflow: auto;
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
 
 <div id="map"></div>
+<div id="debug"></div>
 
 <script>
+    // Fonction pour afficher les messages dans la div de débogage
+    function debugLog(message) {
+        var debugDiv = document.getElementById("debug");
+        debugDiv.innerHTML += message + "<br>";
+    }
+
     // Initialisation de la carte
     var map = L.map('map').setView([49.182863, 0.370679], 8);
 
@@ -48,30 +63,35 @@
                             out body; 
                             >; 
                             out skel qt;`;
-
-        $.ajax({
-            url: overpassApiUrl,
-            method: 'GET',
-            data: {data: overpassQuery},
-            dataType: 'json',
-            success: function(data) {
+            $.ajax({
+        url: overpassApiUrl,
+        method: 'GET',
+        data: {data: overpassQuery},
+        dataType: 'json',
+        success: function(data) {
+            debugLog("Données récupérées avec succès.");
+            try {
                 var osmData = osmtogeojson(data);
                 L.geoJSON(osmData, {
                     style: function(feature) {
                         return {color: "#ff0000", weight: 3};
                     }
                 }).addTo(map);
-            },
-            error: function(xhr, status, error) {
-                console.error("Une erreur est survenue lors de la récupération des données: " + status + " " + error);
+                debugLog("Voies ferrées affichées sur la carte.");
+            } catch (error) {
+                debugLog("Erreur lors de la conversion des données : " + error);
             }
-        });
-    }
+        },
+        error: function(xhr, status, error) {
+            debugLog("Erreur lors de la récupération des données: " + status + " " + error);
+        }
+    });
+}
 
-    // Appel de la fonction pour charger les voies ferrées
-    loadRailways();
-
-</script>
-
+// Appel de la fonction pour charger les voies ferrées
+loadRailways();
+    </script>
 </body>
 </html>
+
+
