@@ -1,16 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
+    <title>Voies Ferrées en Normandie</title>
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dinosaur Game</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        #map { height: 400px; }
+    </style>
 </head>
 <body>
-    <div id="gameArea">
-        <div id="dinosaur"></div>
-    </div>
-    <div id="score">Score: 0</div>
-    <script src="script.js"></script>
+    <div id="map"></div>
+    <script>
+        var map = L.map('map').setView([49.182863, -0.370679], 8); // Centre de la carte sur la Normandie
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Requête Overpass pour les voies ferrées en Normandie
+        var overpassUrl = 'https://overpass-api.de/api/interpreter?data=[out:json];(way["railway"="rail"](area:3600057896););out body;>;out skel qt;';
+
+        fetch(overpassUrl)
+            .then(response => response.json())
+            .then(data => {
+                L.geoJSON(osmToGeojson(data), {
+                    style: function(feature) {
+                        return {color: "#0000FF"}; // Couleur des voies ferrées
+                    }
+                }).addTo(map);
+            });
+
+        // Convertit les données OSM au format GeoJSON
+        function osmToGeojson(osm) {
+            var geojson = { type: "FeatureCollection", features: [] };
+            osm.elements.forEach(function(elem) {
+                if (elem.type == "way") {
+                    var feature = { 
+                        type: "Feature",
+                        properties: elem.tags,
+                        geometry: { type: "LineString", coordinates: [] }
+                    };
+                    elem.nodes.forEach(function(nodeId) {
+                        var node = osm.elements.find(e => e.type == "node" && e.id == nodeId);
+                        if (node) {
+                            feature.geometry.coordinates.push([node.lon, node.lat]);
+                        }
+                    });
+                    geojson.features.push(feature);
+                }
+            });
+            return geojson;
+        }
+    </script>
 </body>
 </html>
