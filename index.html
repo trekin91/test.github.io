@@ -54,8 +54,8 @@
     // Fonction pour charger les données des voies ferrées via Overpass API
     function loadRailways() {
         var overpassApiUrl = "https://overpass-api.de/api/interpreter";
-        var overpassQuery = `[out:json][timeout:60];
-                     area["ISO3166-1"="FR"][admin_level=2];
+        var overpassQuery = `[out:json][timeout:25];
+                     area["ISO3166-2"="FR-S"][admin_level=4];
                      (
                        way["railway"](area);
                        relation["railway"](area);
