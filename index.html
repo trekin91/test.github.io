@@ -80,13 +80,20 @@
                     style: function(feature) {
                         return {color: "#ff0000", weight: 3};
                     },
-                    onEachFeature: function(feature, layer) {
-                        if (feature.properties && feature.properties.tags) {
-                            var name = feature.properties.tags.name || "Inconnu";
-                            var ref = feature.properties.tags.ref || "Pas de numéro";
-                            layer.bindPopup("Nom: " + name + "<br>Numéro: " + ref);
-                        }
-                    }
+                    function onEachFeature(feature, layer) {
+    if (feature.properties && feature.properties.tags) {
+        var name = feature.properties.tags.name || "Inconnu";
+        var ref = feature.properties.tags.ref || "Pas de numéro";
+        var popupContent = "Nom: " + name + "<br>Numéro: " + ref;
+
+        layer.bindPopup(popupContent);
+
+        layer.on('click', function() {
+            layer.openPopup();
+        });
+    }
+}
+
                 }).addTo(map);
                 debugLog("Voies ferrées affichées sur la carte.");
             } catch (error) {
