@@ -62,11 +62,12 @@
         var overpassQuery = `[out:json][timeout:25];
                                   area[name="Hauts-de-France"]->.searchArea;
                                   (
-                                    way["railway"](area.searchArea);
+                                    way["railway"](around:10000,50.216667,1.633333);
                                   );
                                   out body; 
                                   >; 
                                   out skel qt;`;
+
 
 
    $.ajax({
