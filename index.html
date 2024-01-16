@@ -60,10 +60,9 @@
     var map = L.map('map').setView([49.182863, 0.370679], 8);
 
     // Ajout du fond de carte OpenStreetMap
-    L.tileLayer('https
-://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-maxZoom: 19,
-attribution: '© OpenStreetMap contributors'
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
 // Fonction pour charger les données des voies ferrées via Overpass API
@@ -104,8 +103,8 @@ function loadRailways() {
 
 // Démarrage du chargement des données une fois que osmtogeojson est prêt
 waitForOsmToGeojson();
-</script>
+    </script>
 </body>
 </html>
     
-    
+
