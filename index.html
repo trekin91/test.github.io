@@ -70,43 +70,50 @@
 
 
    $.ajax({
-    url: overpassApiUrl,
-    method: 'GET',
-    data: {data: overpassQuery},
-    dataType: 'json',
-    success: function(data) {
-        try {
-            var osmData = osmtogeojson(data);
-            L.geoJSON(osmData, {
-                style: function(feature) {
-                    return {color: "#ff0000", weight: 3};
-                },
-                onEachFeature: function(feature, layer) {
-                    if (feature.properties && feature.properties.tags) {
-        var name = feature.properties.tags.name || "Inconnu";
-        var ref = feature.properties.tags.ref || "Pas de numéro";
-        var popupContent = "Nom: " + name + "<br>Numéro: " + ref;
+        url: overpassApiUrl,
+        method: 'GET',
+        data: {data: overpassQuery},
+        dataType: 'json',
+        success: function(data) {
+            try {
+                var osmData = osmtogeojson(data);
+                debugLog(osmData)
+                L.geoJSON(osmData, {
+                    style: function(feature) {
+                        return {color: "#ff0000", weight: 3};
+                    },
+                    onEachFeature: function(feature, layer) {
+                        if (feature.properties && feature.properties.tags) {
+                            var name = feature.properties.tags.name || "Inconnu";
+                            var ref = feature.properties.tags.ref || "Pas de numéro";
+                            var popupContent = "Nom: " + name + "<br>Numéro: " + ref;
 
-        // Ajouter un gestionnaire pour l'événement click et touchstart
-        layer.on({
-            click: function(e) {
-                layer.bindPopup(popupContent).openPopup();
-            },
-            touchstart: function(e) {
-                layer.bindPopup(popupContent).openPopup();
+                            // Utiliser une fonction pour gérer les interactions
+                            handleInteraction(layer, popupContent);
+                        }
+                    }
+                }).addTo(map);
+            } catch (error) {
+                debugLog("Erreur lors de la conversion des données: " + error);
             }
-        });
-    }
-                }
-            }).addTo(map);
-        } catch (error) {
-            console.error("Erreur lors de la conversion des données: " + error);
+        },
+        error: function(xhr, status, error) {
+            debugLog("Erreur lors de la récupération des données: " + status + " - " + error);
         }
-    },
-    error: function(xhr, status, error) {
-        console.error("Erreur lors de la récupération des données: " + status + " - " + error);
-    }
-});
+    });
+}
+
+// Fonction pour gérer les interactions click et touchstart
+function handleInteraction(layer, popupContent) {
+    layer.bindPopup(popupContent);
+    layer.on({
+        click: function(e) {
+            e.target.openPopup();
+        },
+        touchstart: function(e) {
+            e.target.openPopup();
+        }
+    });
 }
 
 // Appel de la fonction pour charger les voies ferrées dès que la page est chargée
