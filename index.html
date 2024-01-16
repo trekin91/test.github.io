@@ -14,12 +14,8 @@
     <!-- Ajout de jQuery pour faciliter les requêtes AJAX -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-    <!-- Ajout de osmtogeojson de manière asynchrone -->
-    <script>
-        var osmtogeojsonScript = document.createElement('script');
-        osmtogeojsonScript.src = 'https://unpkg.com/osmtogeojson';
-        document.head.appendChild(osmtogeojsonScript);
-    </script>
+    <!-- Inclusion directe de osmtogeojson -->
+    <script src="https://unpkg.com/osmtogeojson/osmtogeojson.min.js"></script>
 
     <style>
         #map {
@@ -45,16 +41,6 @@
     function debugLog(message) {
         var debugDiv = document.getElementById("debug");
         debugDiv.innerHTML += message + "<br>";
-    }
-
-    // Attendre que la bibliothèque osmtogeojson soit chargée
-    function waitForOsmToGeojson() {
-        if (typeof osmtogeojson === "undefined") {
-            setTimeout(waitForOsmToGeojson, 500);
-            debugLog("Chargement osmtogejsô")
-        } else {
-            loadRailways();
-        }
     }
 
     // Initialisation de la carte
@@ -103,7 +89,7 @@ function loadRailways() {
 }
 
 // Démarrage du chargement des données une fois que osmtogeojson est prêt
-waitForOsmToGeojson();
+loadRailways();
     </script>
 </body>
 </html>
