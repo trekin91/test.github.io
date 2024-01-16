@@ -77,7 +77,7 @@
         success: function(data) {
             try {
                 var osmData = osmtogeojson(data);
-                debugLog(osmData)
+                debugLog(JSON.stringify(osmData))
                 L.geoJSON(osmData, {
                     style: function(feature) {
                         return {color: "#ff0000", weight: 3};
