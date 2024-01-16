@@ -4,56 +4,66 @@
     <title>Voies Ferrées en Normandie</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+
+    <!-- Ajout de Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+    <!-- Ajout de Leaflet JavaScript -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    
     <style>
-        #map { height: 400px; }
+        #map {
+            height: 400px;
+        }
     </style>
 </head>
 <body>
-    <div id="map"></div>
-    <script>
-        var map = L.map('map').setView([49.182863, -0.370679], 8); // Centre de la carte sur la Normandie
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
+<div id="map"></div>
 
-        // Requête Overpass pour les voies ferrées en Normandie
-        var overpassUrl = 'https://overpass-api.de/api/interpreter?data=[out:json];(way["railway"="rail"](area:3600057896););out body;>;out skel qt;';
+<script>
+    // Initialisation de la carte
+    var map = L.map('map').setView([49.182863, 0.370679], 8);
 
-        fetch(overpassUrl)
-            .then(response => response.json())
-            .then(data => {
-                L.geoJSON(osmToGeojson(data), {
-                    style: function(feature) {
-                        return {color: "#0000FF"}; // Couleur des voies ferrées
-                    }
-                }).addTo(map);
-            });
+    // Ajout du fond de carte OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
 
-        // Convertit les données OSM au format GeoJSON
-        function osmToGeojson(osm) {
-            var geojson = { type: "FeatureCollection", features: [] };
-            osm.elements.forEach(function(elem) {
-                if (elem.type == "way") {
-                    var feature = { 
-                        type: "Feature",
-                        properties: elem.tags,
-                        geometry: { type: "LineString", coordinates: [] }
-                    };
-                    elem.nodes.forEach(function(nodeId) {
-                        var node = osm.elements.find(e => e.type == "node" && e.id == nodeId);
-                        if (node) {
-                            feature.geometry.coordinates.push([node.lon, node.lat]);
-                        }
-                    });
-                    geojson.features.push(feature);
+    // Ajout des voies ferrées
+    var railwayLayer = new L.LayerGroup().addTo(map);
+    var osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    var osmAttrib = '© OpenStreetMap contributors';
+    var osm = new L.TileLayer(osmUrl, { attribution: osmAttrib });
+
+    // Ici vous devrez ajouter le code pour filtrer et afficher uniquement les voies ferrées
+    // Cela peut nécessiter l'utilisation d'une API ou d'un service supplémentaire pour récupérer et filtrer les données
+    // Fonction pour charger les données des voies ferrées via Overpass API
+    function loadRailways() {
+        var overpassApiUrl = "https://overpass-api.de/api/interpreter";
+        var overpassQuery = `[out:json][timeout:25];
+                            area[name="Normandie"]->.searchArea;
+                            (
+                              way["railway"="rail"](area.searchArea);
+                            );
+                            out body; 
+                            >; 
+                            out skel qt;`;
+
+        $.get(overpassApiUrl, {data: overpassQuery}, function(data) {
+            var osmData = osmtogeojson(data);
+            L.geoJSON(osmData, {
+                style: function(feature) {
+                    return {color: "#ff0000"};
                 }
-            });
-            return geojson;
-        }
-    </script>
+            }).addTo(map);
+        });
+    }
+
+    // Appel de la fonction pour charger les voies ferrées
+    loadRailways();
+</script>
+
 </body>
 </html>
