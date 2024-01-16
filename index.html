@@ -46,9 +46,8 @@
     }
 
     // Initialisation de la carte
-    var map = L.map('map', {
-    tap: true
-}).setView([49.182863, 0.370679], 8);
+    var map = L.map('map', { tap: true }).setView([49.182863, 0.370679], 8);
+
 
 
     // Ajout du fond de carte OpenStreetMap
@@ -84,15 +83,20 @@
                 },
                 onEachFeature: function(feature, layer) {
                     if (feature.properties && feature.properties.tags) {
-                        var name = feature.properties.tags.name || "Inconnu";
-                        var ref = feature.properties.tags.ref || "Pas de numéro";
-                        layer.bindPopup("Nom: " + name + "<br>Numéro: " + ref);
+        var name = feature.properties.tags.name || "Inconnu";
+        var ref = feature.properties.tags.ref || "Pas de numéro";
+        var popupContent = "Nom: " + name + "<br>Numéro: " + ref;
 
-                        // Ajout d'un écouteur d'événements pour gérer les interactions tactiles
-                        layer.on('click', function() {
-                            layer.openPopup();
-                        });
-                    }
+        // Ajouter un gestionnaire pour l'événement click et touchstart
+        layer.on({
+            click: function(e) {
+                layer.bindPopup(popupContent).openPopup();
+            },
+            touchstart: function(e) {
+                layer.bindPopup(popupContent).openPopup();
+            }
+        });
+    }
                 }
             }).addTo(map);
         } catch (error) {
