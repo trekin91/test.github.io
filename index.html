@@ -10,6 +10,12 @@
 
     <!-- Ajout de Leaflet JavaScript -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <!-- Ajout de jQuery pour les requêtes AJAX -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Ajout de osmtogeojson pour la conversion des données OSM en GeoJSON -->
+    <script src="https://unpkg.com/osmtogeojson"></script>
     
     <style>
         #map {
@@ -31,14 +37,6 @@
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // Ajout des voies ferrées
-    var railwayLayer = new L.LayerGroup().addTo(map);
-    var osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-    var osmAttrib = '© OpenStreetMap contributors';
-    var osm = new L.TileLayer(osmUrl, { attribution: osmAttrib });
-
-    // Ici vous devrez ajouter le code pour filtrer et afficher uniquement les voies ferrées
-    // Cela peut nécessiter l'utilisation d'une API ou d'un service supplémentaire pour récupérer et filtrer les données
     // Fonction pour charger les données des voies ferrées via Overpass API
     function loadRailways() {
         var overpassApiUrl = "https://overpass-api.de/api/interpreter";
@@ -63,6 +61,7 @@
 
     // Appel de la fonction pour charger les voies ferrées
     loadRailways();
+
 </script>
 
 </body>
