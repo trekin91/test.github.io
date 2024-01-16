@@ -55,13 +55,13 @@
     function loadRailways() {
         var overpassApiUrl = "https://overpass-api.de/api/interpreter";
         var overpassQuery = `[out:json][timeout:25];
-                     area["ISO3166-2"="FR-S"][admin_level=4];
-                     (
-                       way["railway"](area);
-                       relation["railway"](area);
-                     );
-                     (._;>;);
-                     out body;`;
+                                  area[name="Hauts-de-France"]->.searchArea;
+                                  (
+                                    way["railway"](area.searchArea);
+                                  );
+                                  out body; 
+                                  >; 
+                                  out skel qt;`;
 
 
     $.ajax({
