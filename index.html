@@ -59,14 +59,34 @@
     // Fonction pour charger les données des voies ferrées via Overpass API
     function loadRailways() {
         var overpassApiUrl = "https://overpass-api.de/api/interpreter";
-        var overpassQuery = `[out:json][timeout:25];
+        
+         var queryNormandie = `[out:json][timeout:25];
+                              area[name="Normandie"]->.searchArea;
+                              (
+                                way["railway"](area.searchArea);
+                              );
+                              out body; 
+                              >; 
+                              out skel qt;`;
+
+        // Requête pour les Hauts-de-France
+        var queryHautsDeFrance = `[out:json][timeout:25];
                                   area[name="Hauts-de-France"]->.searchArea;
                                   (
-                                    way["railway"](around:10000,50.216667,1.633333);
+                                    way["railway"](area.searchArea);
                                   );
                                   out body; 
                                   >; 
                                   out skel qt;`;
+        
+        var overpassQuery = `[out:json][timeout:25];
+                     (
+                       way["railway"](around:10000,50.216667,1.633333); // Rayon de 10 km autour de la Baie de Somme
+                       relation["railway"](around:10000,50.216667,1.633333);
+                     );
+                     (._;>;);
+                     out body;`;
+
 
 
 
