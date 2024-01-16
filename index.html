@@ -14,8 +14,8 @@
     <!-- Ajout de jQuery pour faciliter les requêtes AJAX -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-    <!-- Inclusion directe de osmtogeojson -->
-    <script src="https://unpkg.com/osmtogeojson/osmtogeojson.min.js"></script>
+    <!-- Ajout de osmtogeojson -->
+    <script src="https://unpkg.com/osmtogeojson"></script>
 
     <style>
         #map {
@@ -47,21 +47,21 @@
     var map = L.map('map').setView([49.182863, 0.370679], 8);
 
     // Ajout du fond de carte OpenStreetMap
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '© OpenStreetMap contributors'
-}).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
 
-// Fonction pour charger les données des voies ferrées via Overpass API
-function loadRailways() {
-    var overpassApiUrl = "https://overpass-api.de/api/interpreter";
-    var overpassQuery = `[out:json][timeout:25];
-                        area[name="Normandie"]->.searchArea;
-                        (
-                          way["railway"="rail"](area.searchArea);
-                        );
-                        out body; 
-                        >; 
+    // Fonction pour charger les données des voies ferrées via Overpass API
+    function loadRailways() {
+        var overpassApiUrl = "https://overpass-api.de/api/interpreter";
+        var overpassQuery = `[out:json][timeout:25];
+                            area[name="Normandie"]->.searchArea;
+                            (
+                              way["railway"="rail"](area.searchArea);
+                            );
+                            out body;
+                                                    >; 
                         out skel qt;`;
 
     $.ajax({
@@ -88,10 +88,10 @@ function loadRailways() {
     });
 }
 
-// Démarrage du chargement des données une fois que osmtogeojson est prêt
-loadRailways();
-    </script>
+// Appel de la fonction pour charger les voies ferrées dès que la page est chargée
+$(document).ready(function() {
+    loadRailways();
+});
+</script>
 </body>
 </html>
-    
-
