@@ -3,15 +3,15 @@
 <head>
     <title>Voies Ferrées en Normandie</title>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Ajout de Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 
     <!-- Ajout de Leaflet JavaScript -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-
-    <!-- Ajout de jQuery pour les requêtes AJAX -->
+    
+    <!-- Ajout de jQuery pour faciliter les requêtes AJAX -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <!-- Ajout de osmtogeojson pour la conversion des données OSM en GeoJSON -->
@@ -41,7 +41,7 @@
     function loadRailways() {
         var overpassApiUrl = "https://overpass-api.de/api/interpreter";
         var overpassQuery = `[out:json][timeout:25];
-                            area["ISO3166-2"="FR-NOR"]->.searchArea;
+                            area[name="Normandie"]->.searchArea;
                             (
                               way["railway"="rail"](area.searchArea);
                             );
@@ -51,31 +51,27 @@
 
         $.ajax({
             url: overpassApiUrl,
+            method: 'GET',
+            data: {data: overpassQuery},
             dataType: 'json',
-            type: 'GET',
-            data: {
-                data: overpassQuery
-            },
             success: function(data) {
-                if (data && data.elements) {
-                    var osmData = osmtogeojson(data);
-                    L.geoJSON(osmData, {
-                        style
-: function(feature) {
-return {color: "#ff0000"};
-}
-}).addTo(map);
-} else {
-console.log("Aucune donnée récupérée ou erreur de traitement des données.");
-}
-},
-error: function() {
-console.log("Erreur lors de l'exécution de la requête Overpass API.");
-}
-});
+                var osmData = osmtogeojson(data);
+                L.geoJSON(osmData, {
+                    style: function(feature) {
+                        return {color: "#ff0000", weight: 3};
+                    }
+                }).addTo(map);
+            },
+            error: function(xhr, status, error) {
+                console.error("Une erreur est survenue lors de la récupération des données: " + status + " " + error);
+            }
+        });
     }
-// Appel de la fonction pour charger les voies ferrées
-loadRailways();
+
+    // Appel de la fonction pour charger les voies ferrées
+    loadRailways();
+
 </script>
+
 </body>
 </html>
