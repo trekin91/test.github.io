@@ -70,22 +70,28 @@
         data: {data: overpassQuery},
         dataType: 'json',
         success: function(data) {
-            var osmData = osmtogeojson(data);
-            L.geoJSON(osmData, {
-                style: function(feature) {
-                    return {color: "#ff0000", weight: 3};
-                },
-                onEachFeature: function(feature, layer) {
-                    if (feature.properties && feature.properties.tags) {
-                        var name = feature.properties.tags.name || "Inconnu";
-                        var ref = feature.properties.tags.ref || "Pas de numéro";
-                        layer.bindPopup("Nom: " + name + "<br>Numéro: " + ref);
+            debugLog("Données chargées avec succès.");
+            try {
+                var osmData = osmtogeojson(data);
+                L.geoJSON(osmData, {
+                    style: function(feature) {
+                        return {color: "#ff0000", weight: 3};
+                    },
+                    onEachFeature: function(feature, layer) {
+                        if (feature.properties && feature.properties.tags) {
+                            var name = feature.properties.tags.name || "Inconnu";
+                            var ref = feature.properties.tags.ref || "Pas de numéro";
+                            layer.bindPopup("Nom: " + name + "<br>Numéro: " + ref);
+                        }
                     }
-                }
-            }).addTo(map);
+                }).addTo(map);
+                debugLog("Voies ferrées affichées sur la carte.");
+            } catch (error) {
+                debugLog("Erreur lors de la conversion des données: " + error);
+            }
         },
         error: function(xhr, status, error) {
-            console.error("Erreur lors de la récupération des données: " + error);
+            debugLog("Erreur lors de la récupération des données: " + status + " - " + error);
         }
     });
 }
