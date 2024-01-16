@@ -105,10 +105,10 @@
                     },
                     onEachFeature: function(feature, layer) {
                         
-                        if (feature.properties && feature.properties.tags) {
-                            var name = feature.properties.tags.name || "Inconnu";
-                            var ref = feature.properties.tags.ref || "Pas de numéro";
-                            var popupContent = "Nom: " + name + "<br>Numéro: " + ref;
+                        if (feature.properties && feature.properties.name) {
+                            var name = feature.properties.name || "Inconnu";
+                            var exploitant = feature.properties.operator|| "Pas d exploitant";
+                            var popupContent = "Nom: " + name + "<br>Exploitant: " + exploitant;
 
                             // Utiliser une fonction pour gérer les interactions
                             handleInteraction(layer, popupContent);
