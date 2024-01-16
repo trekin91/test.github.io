@@ -43,7 +43,10 @@
     }
 
     // Initialisation de la carte
-    var map = L.map('map').setView([49.182863, 0.370679], 8);
+    var map = L.map('map', {
+    tap: true
+}).setView([49.182863, 0.370679], 8);
+
 
     // Ajout du fond de carte OpenStreetMap
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
