@@ -54,14 +54,14 @@
     // Fonction pour charger les données des voies ferrées via Overpass API
     function loadRailways() {
         var overpassApiUrl = "https://overpass-api.de/api/interpreter";
-        var overpassQuery = `[out:json][timeout:25];
-                    area[name="Normandie"]->.searchArea;
-                    (
-                      way["railway"](area.searchArea);
-                    );
-                    out body; 
-                    >; 
-                    out skel qt;`;
+        var overpassQuery = `[out:json][timeout:60];
+                     area["ISO3166-1"="FR"][admin_level=2];
+                     (
+                       way["railway"](area);
+                       relation["railway"](area);
+                     );
+                     (._;>;);
+                     out body;`;
 
 
     $.ajax({
