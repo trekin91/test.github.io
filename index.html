@@ -55,13 +55,14 @@
     function loadRailways() {
         var overpassApiUrl = "https://overpass-api.de/api/interpreter";
         var overpassQuery = `[out:json][timeout:25];
-                            area[name="Normandie"]->.searchArea;
-                            (
-                              way["railway"="rail"](area.searchArea);
-                            );
-                            out body;
-                                                    >; 
-                        out skel qt;`;
+                    area[name="Normandie"]->.searchArea;
+                    (
+                      way["railway"](area.searchArea);
+                    );
+                    out body; 
+                    >; 
+                    out skel qt;`;
+
 
     $.ajax({
         url: overpassApiUrl,
