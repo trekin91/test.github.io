@@ -41,63 +41,71 @@
 <div id="debug"></div>
 
 <script>
-   
-// Fonction pour afficher les messages dans la div de débogage
-function debugLog(message) {
-var debugDiv = document.getElementById("debug");
-debugDiv.innerHTML += message + "<br>";
-}
+    // Fonction pour afficher les messages dans la div de débogage
+    function debugLog(message) {
+        var debugDiv = document.getElementById("debug");
+        debugDiv.innerHTML += message + "<br>";
+    }
 
-// Attendre que la bibliothèque osmtogeojson soit chargée
-function waitForOsmToGeojson() {
-if (typeof osmtogeojson === "undefined") {
-setTimeout(waitForOsmToGeojson, 500);
-} else {
-loadRailways();
-}
-}
+    // Attendre que la bibliothèque osmtogeojson soit chargée
+    function waitForOsmToGeojson() {
+        if (typeof osmtogeojson === "undefined") {
+            setTimeout(waitForOsmToGeojson, 500);
+        } else {
+            loadRailways();
+        }
+    }
 
-// Initialisation de la carte
-var map = L.map('map').setView([49.182863, 0.370679], 8);
+    // Initialisation de la carte
+    var map = L.map('map').setView([49.182863, 0.370679], 8);
 
-// Ajout du fond de carte OpenStreetMap
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Ajout du fond de carte OpenStreetMap
+    L.tileLayer('https
+://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 maxZoom: 19,
 attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
 // Fonction pour charger les données des voies ferrées via Overpass API
 function loadRailways() {
-var overpassApiUrl = "https://overpass-api.de/api/interpreter";
-var overpassQuery = [out:json][timeout:25]; area[name="Normandie"]->.searchArea; ( way["railway"="rail"](area.searchArea); ); out body; >; out skel qt;;
-    
-$.ajax({
-    url: overpassApiUrl,
-    method: 'GET',
-    data: {data: overpassQuery},
-    dataType: 'json',
-    success: function(data) {
-        try {
-            var osmData = osmtogeojson(data);
-            L.geoJSON(osmData, {
-                style: function(feature) {
-                    return {color: "#ff0000", weight: 3};
-                }
-            }).addTo(map);
-            debugLog("Voies ferrées affichées sur la carte.");
-        } catch (error) {
-            debugLog("Erreur lors de la conversion des données : " + error);
+    var overpassApiUrl = "https://overpass-api.de/api/interpreter";
+    var overpassQuery = `[out:json][timeout:25];
+                        area[name="Normandie"]->.searchArea;
+                        (
+                          way["railway"="rail"](area.searchArea);
+                        );
+                        out body; 
+                        >; 
+                        out skel qt;`;
+
+    $.ajax({
+        url: overpassApiUrl,
+        method: 'GET',
+        data: {data: overpassQuery},
+        dataType: 'json',
+        success: function(data) {
+            try {
+                var osmData = osmtogeojson(data);
+                L.geoJSON(osmData, {
+                    style: function(feature) {
+                        return {color: "#ff0000", weight: 3};
+                    }
+                }).addTo(map);
+                debugLog("Voies ferrées affichées sur la carte.");
+            } catch (error) {
+                debugLog("Erreur lors de la conversion des données : " + error);
+            }
+        },
+        error: function(xhr, status, error) {
+            debugLog("Erreur lors de la récupération des données: " + status + " " + error);
         }
-    },
-    error: function(xhr, status, error) {
-        debugLog("Erreur lors de la récupération des données: " + status + " " + error);
-    }
-});
+    });
 }
 
 // Démarrage du chargement des données une fois que osmtogeojson est prêt
 waitForOsmToGeojson();
-
 </script>
 </body>
 </html>
+    
+    
