@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Voies Ferrées en Normandie</title>
     <meta charset="utf-8" />
@@ -13,16 +14,17 @@
 
     <!-- Ajout de leaflet-polyfill pour les événements tactiles -->
     <script src="https://unpkg.com/leaflet-polyfill"></script>
-    
+
     <!-- Ajout de jQuery pour faciliter les requêtes AJAX -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/osmtogeojson@3.0.0-beta.5/osmtogeojson.min.js"></script>
-    
+
     <style>
         #map {
             height: 400px;
         }
+
         #debug {
             height: 150px;
             overflow: auto;
@@ -33,53 +35,54 @@
         }
     </style>
 </head>
+
 <body>
 
-<div id="map"></div>
-<div id="debug"></div>
+    <div id="map"></div>
+    <div id="debug"></div>
 
-<script>
-    // Fonction pour afficher les messages dans la div de débogage
-    function debugLog(message) {
-        var debugDiv = document.getElementById("debug");
-        debugDiv.innerHTML += message + "<br>";
-    }
+    <script>
+        // Fonction pour afficher les messages dans la div de débogage
+        function debugLog(message) {
+            var debugDiv = document.getElementById("debug");
+            debugDiv.innerHTML += message + "<br>";
+        }
 
-    // Initialisation de la carte
-    var map = L.map('map', { tap: true }).setView([49.182863, 0.370679], 8);
+        // Initialisation de la carte
+        var map = L.map('map', { tap: true }).setView([49.182863, 0.370679], 8);
 
 
 
-    // Ajout du fond de carte OpenStreetMap
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+        // Ajout du fond de carte OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
 
-    // Fonction pour charger les données des voies ferrées via Overpass API
-    function loadRailways() {
-        var overpassApiUrl = "https://overpass-api.de/api/interpreter";
-        
-         var queryNormandie = `[out:json][timeout:25];
+        // Fonction pour charger les données des voies ferrées via Overpass API
+        function loadRailways() {
+            var overpassApiUrl = "https://overpass-api.de/api/interpreter";
+
+            var queryNormandie = `[out:json][timeout:25];
                               area[name="Normandie"]->.searchArea;
                               (
                                 way["railway"](area.searchArea);
                               );
-                              out body; 
-                              >; 
+                              out body;
+                              >;
                               out skel qt;`;
 
-        // Requête pour les Hauts-de-France
-        var queryHautsDeFrance = `[out:json][timeout:25];
+            // Requête pour les Hauts-de-France
+            var queryHautsDeFrance = `[out:json][timeout:25];
                                   area[name="Hauts-de-France"]->.searchArea;
                                   (
                                     way["railway"](area.searchArea);
                                   );
-                                  out body; 
-                                  >; 
+                                  out body;
+                                  >;
                                   out skel qt;`;
-        
-        var overpassQuery = `[out:json][timeout:25];
+
+            var overpassQuery = `[out:json][timeout:25];
                      (
                        way["railway"](around:10000,49.0147,1.3776); // Rayon de 10 km autour de la Baie de Somme
                        relation["railway"](around:10000,49.0147,1.3776);
@@ -90,58 +93,59 @@
 
 
 
-   $.ajax({
-        url: overpassApiUrl,
-        method: 'GET',
-        data: {data: overpassQuery},
-        dataType: 'json',
-        success: function(data) {
-            try {
-                var osmData = osmtogeojson(data);
-                debugLog(JSON.stringify(osmData))
-                L.geoJSON(osmData, {
-                    style: function(feature) {
-                        return {color: "#ff0000", weight: 3};
-                    },
-                    onEachFeature: function(feature, layer) {
-                        
-                        if (feature.properties && feature.properties.name) {
-                            var name = feature.properties.name || "Inconnu";
-                            var exploitant = feature.properties.operator|| "Pas d exploitant";
-                            var popupContent = "Nom: " + name + "<br>Exploitant: " + exploitant;
+            $.ajax({
+                url: overpassApiUrl,
+                method: 'GET',
+                data: { data: overpassQuery },
+                dataType: 'json',
+                success: function (data) {
+                    try {
+                        var osmData = osmtogeojson(data);
+                        debugLog(JSON.stringify(osmData, null, 4))
+                        L.geoJSON(osmData, {
+                            style: function (feature) {
+                                return { color: "#ff0000", weight: 3 };
+                            },
+                            onEachFeature: function (feature, layer) {
 
-                            // Utiliser une fonction pour gérer les interactions
-                            handleInteraction(layer, popupContent);
-                        }
+                                if (feature.properties && feature.properties.name) {
+                                    var name = feature.properties.name || "Inconnu";
+                                    var exploitant = feature.properties.operator || "Pas d exploitant";
+                                    var popupContent = "Nom: " + name + "<br>Exploitant: " + exploitant;
+
+                                    // Utiliser une fonction pour gérer les interactions
+                                    handleInteraction(layer, popupContent);
+                                }
+                            }
+                        }).addTo(map);
+                    } catch (error) {
+                        debugLog("Erreur lors de la conversion des données: " + error);
                     }
-                }).addTo(map);
-            } catch (error) {
-                debugLog("Erreur lors de la conversion des données: " + error);
-            }
-        },
-        error: function(xhr, status, error) {
-            debugLog("Erreur lors de la récupération des données: " + status + " - " + error);
+                },
+                error: function (xhr, status, error) {
+                    debugLog("Erreur lors de la récupération des données: " + status + " - " + error);
+                }
+            });
         }
-    });
-}
 
-// Fonction pour gérer les interactions click et touchstart
-function handleInteraction(layer, popupContent) {
-    layer.bindPopup(popupContent);
-    layer.on({
-        click: function(e) {
-            e.target.openPopup();
-        },
-        touchstart: function(e) {
-            e.target.openPopup();
+        // Fonction pour gérer les interactions click et touchstart
+        function handleInteraction(layer, popupContent) {
+            layer.bindPopup(popupContent);
+            layer.on({
+                click: function (e) {
+                    e.target.openPopup();
+                },
+                touchstart: function (e) {
+                    e.target.openPopup();
+                }
+            });
         }
-    });
-}
 
-// Appel de la fonction pour charger les voies ferrées dès que la page est chargée
-$(document).ready(function() {
-    loadRailways();
-});
-</script>
+        // Appel de la fonction pour charger les voies ferrées dès que la page est chargée
+        $(document).ready(function () {
+            loadRailways();
+        });
+    </script>
 </body>
+
 </html>
