@@ -1,15 +1,16 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Graphique Distance vs Vitesse</title>
+    <title>Graphique Progressif Distance vs Vitesse</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Inclusion de Chart.js -->
 </head>
 <body>
     <canvas id="myChart" width="400" height="400"></canvas> <!-- Canvas pour le graphique -->
     <script>
         var ctx = document.getElementById('myChart').getContext('2d');
-        
+
         var data = {
             labels: [], // Points kilométriques
             datasets: [{
@@ -41,6 +42,22 @@
                     x: {
                         beginAtZero: true,
                         max: 7000 // Limite de distance maximale
+                    }
+                },
+                animation: {
+                    duration: 5000, // Durée totale de l'animation
+                    easing: 'linear',
+                    onProgress: function(animation) {
+                        var chartInstance = animation.chart;
+                        var ctx = chartInstance.ctx;
+                        var index = animation.currentStep / animation.numSteps;
+                        var length = data.datasets[0].data.length * index;
+                        var dataset = chartInstance.data.datasets[0];
+
+                        dataset.data = dataset.data.map((data, idx) => idx < length ? data : null);
+                    },
+                    onComplete: function() {
+                        myChart.update();
                     }
                 }
             }
