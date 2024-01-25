@@ -1,34 +1,35 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Graphique Progressif Distance vs Vitesse</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Inclusion de Chart.js -->
+    <title>Graphique Animé Distance vs Vitesse</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <canvas id="myChart" width="400" height="400"></canvas> <!-- Canvas pour le graphique -->
+    <canvas id="myChart" width="400" height="400"></canvas>
     <script>
         var ctx = document.getElementById('myChart').getContext('2d');
 
+        var fullLabels = []; // Tous les points kilométriques
+        var fullData = [];   // Toutes les données de vitesse
+
+        // Génération des données complètes
+        for (let i = 0; i <= 7000; i += 100) {
+            fullLabels.push(i);
+            let speed = Math.min(30, (i / 7000) * 30);
+            fullData.push(speed);
+        }
+
         var data = {
-            labels: [], // Points kilométriques
+            labels: [], // Points kilométriques initialement vides
             datasets: [{
                 label: 'Vitesse (km/h)',
-                data: [], // Données de vitesse
+                data: [], // Données de vitesse initialement vides
                 borderColor: 'blue',
                 borderWidth: 2,
                 fill: false
             }]
         };
-
-        // Génération des données
-        for (let i = 0; i <= 7000; i += 100) {
-            data.labels.push(i);
-            // Simulation d'une vitesse progressive (exemple simplifié)
-            let speed = Math.min(30, (i / 7000) * 30);
-            data.datasets[0].data.push(speed);
-        }
 
         var myChart = new Chart(ctx, {
             type: 'line',
@@ -37,31 +38,36 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        max: 30 // Limite de vitesse maximale
+                        max: 30
                     },
                     x: {
                         beginAtZero: true,
-                        max: 7000 // Limite de distance maximale
-                    }
-                },
-                animation: {
-                    duration: 5000, // Durée totale de l'animation
-                    easing: 'linear',
-                    onProgress: function(animation) {
-                        var chartInstance = animation.chart;
-                        var ctx = chartInstance.ctx;
-                        var index = animation.currentStep / animation.numSteps;
-                        var length = data.datasets[0].data.length * index;
-                        var dataset = chartInstance.data.datasets[0];
-
-                        dataset.data = dataset.data.map((data, idx) => idx < length ? data : null);
-                    },
-                    onComplete: function() {
-                        myChart.update();
+                        max: 7000
                     }
                 }
             }
         });
+
+        // Fonction pour ajouter un point au graphique
+        function addData(chart, label, data) {
+            chart.data.labels.push(label);
+            chart.data.datasets.forEach((dataset) => {
+                dataset.data.push(data);
+            });
+            chart.update();
+        }
+
+        // Animation du graphique
+        let index = 0;
+        function drawChart() {
+            if (index < fullLabels.length) {
+                addData(myChart, fullLabels[index], fullData[index]);
+                index++;
+                setTimeout(drawChart, 1000); // Ajoute un point toutes les secondes
+            }
+        }
+
+        drawChart(); // Commence l'animation
     </script>
 </body>
 </html>
