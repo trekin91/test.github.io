@@ -32,7 +32,7 @@
             }, function(error) {
                 document.getElementById("speedDisplay").textContent = `Erreur: ${error.message}`;
             }, {
-                enableHighAccuracy: true,
+                enableHighAccuracy: false,
                 maximumAge: 0,
                 timeout: 5000
             });
