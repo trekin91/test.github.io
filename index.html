@@ -1,44 +1,26 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Vitesse en Temps Réel</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
-        }
-        #speedDisplay {
-            font-size: 24px;
-            margin-top: 20px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
+  <title>Web App Hors Ligne - LocalStorage</title>
 </head>
 <body>
-    <h1>Votre Vitesse en Temps Réel</h1>
-    <div id="speedDisplay">Vitesse: en attente...</div>
+  <h1>Suivi des Commandes - Hors Ligne</h1>
+  <button id="addOrderBtn">Ajouter une commande</button>
+  <ul id="orderList"></ul>
 
-    <script>
-        if ("geolocation" in navigator) {
-            navigator.geolocation.watchPosition(function(position) {
-                var speed = position.coords.speed; // Vitesse en m/s
-                if (speed !== null) {
-                    var speedInKmh = speed * 3.6; // Conversion en km/h
-                    document.getElementById("speedDisplay").textContent = `Vitesse: ${speedInKmh.toFixed(2)} km/h`;
-                } else {
-                    document.getElementById("speedDisplay").textContent = "Vitesse: Indisponible";
-                }
-            }, function(error) {
-                document.getElementById("speedDisplay").textContent = `Erreur: ${error.message}`;
-            }, {
-                enableHighAccuracy: false,
-                maximumAge: 0,
-                timeout: 5000
-            });
-        } else {
-            document.getElementById("speedDisplay").textContent = "La géolocalisation n'est pas prise en charge par ce navigateur.";
-        }
-    </script>
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+      .then(function(registration) {
+        console.log('Service Worker enregistré:', registration);
+      }).catch(function(error) {
+        console.log('Service Worker échec:', error);
+      });
+    }
+  </script>
 </body>
 </html>
